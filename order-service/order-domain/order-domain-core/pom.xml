@@ -5,21 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.food.ordering.system</groupId>
-        <artifactId>order-service</artifactId>
+        <artifactId>order-domain</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>order-domain</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>order-domain-core</module>
-        <module>order-application-services</module>
-    </modules>
+    <artifactId>order-domain-core</artifactId>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
 </project>
