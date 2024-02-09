@@ -15,7 +15,7 @@ public class Money {
         return amount;
     }
 
-    public boolean isGreaterThanzero(){
+    public boolean isGreaterThanZero(){
         return this.amount != null && this.amount.compareTo(BigDecimal.ZERO) > 0;
     }
 
