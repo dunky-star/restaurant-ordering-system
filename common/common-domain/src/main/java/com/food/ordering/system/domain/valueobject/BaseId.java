@@ -3,6 +3,7 @@ package com.food.ordering.system.domain.valueobject;
 import java.util.Objects;
 
 public abstract class BaseId<T> {
+    // Declare a constant variable
     private final T value;
 
     protected BaseId(T value) {
