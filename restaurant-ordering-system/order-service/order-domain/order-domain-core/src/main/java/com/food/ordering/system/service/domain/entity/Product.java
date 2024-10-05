@@ -4,6 +4,7 @@ import com.food.ordering.system.domain.entity.BaseEntity;
 import com.food.ordering.system.domain.valueobject.Money;
 import com.food.ordering.system.domain.valueobject.ProductId;
 
+// Product Entity - (Order Aggregate)
 public class Product extends BaseEntity<ProductId> {
     private String name;
     private Money price;

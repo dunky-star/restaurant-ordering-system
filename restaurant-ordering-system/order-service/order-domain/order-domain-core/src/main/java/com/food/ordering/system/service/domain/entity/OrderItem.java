@@ -5,7 +5,7 @@ import com.food.ordering.system.domain.valueobject.Money;
 import com.food.ordering.system.domain.valueobject.OrderId;
 import com.food.ordering.system.service.domain.valueobject.OrderItemId;
 
-// Order aggregate
+// OrderItem Entity (Order aggregate)
 public class OrderItem extends BaseEntity<OrderItemId> {
     private OrderId orderId; // This field is not final because it will be updated later.
     private final Product product;
