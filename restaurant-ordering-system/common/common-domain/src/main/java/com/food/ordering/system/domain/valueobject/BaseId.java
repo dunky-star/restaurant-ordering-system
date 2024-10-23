@@ -18,11 +18,11 @@ public abstract class BaseId<T> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BaseId<?> baseId = (BaseId<?>) o;
-        return Objects.equals(value, baseId.value);
+        return value.equals(baseId.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(value);
+        return Objects.hash(value);
     }
 }
