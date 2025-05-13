@@ -1,0 +1,88 @@
+package com.food.ordering.system.order.service.domain;
+
+import com.food.ordering.system.domain.valueobject.ProductId;
+import com.food.ordering.system.order.service.domain.entity.Order;
+import com.food.ordering.system.order.service.domain.entity.OrderItem;
+import com.food.ordering.system.order.service.domain.entity.Product;
+import com.food.ordering.system.order.service.domain.entity.Restaurant;
+import com.food.ordering.system.order.service.domain.event.OrderCancelledEvent;
+import com.food.ordering.system.order.service.domain.event.OrderCreatedEvent;
+import com.food.ordering.system.order.service.domain.event.OrderPaidEvent;
+import com.food.ordering.system.order.service.domain.exception.OrderDomainException;
+import lombok.extern.slf4j.Slf4j;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static com.food.ordering.system.domain.DomainConstants.UTC;
+
+@Slf4j
+public class OrderDomainServiceImpl implements OrderDomainService{
+    @Override
+    public OrderCreatedEvent validateAndInitiateOrder(Order order, Restaurant restaurant) {
+        validateRestaurant(restaurant);
+        setOrderProductInformation(order, restaurant);
+        order.validateOrder();
+        order.initializeOrder();
+        log.info("Order with id: {} is initiated", order.getId().getValue());
+        return new OrderCreatedEvent(order, ZonedDateTime.now(ZoneId.of(UTC)));
+    }
+
+    @Override
+    public OrderPaidEvent payOrder(Order order) {
+        order.pay();
+        log.info("Order with id: {} is paid", order.getId().getValue());
+        return new OrderPaidEvent(order, ZonedDateTime.now(ZoneId.of(UTC)));
+    }
+
+    @Override
+    public void approveOrder(Order order) {
+        order.approve();
+        log.info("Order with id: {} is approved", order.getId().getValue());
+    }
+
+    @Override
+    public OrderCancelledEvent cancelOrderPayment(Order order, List<String> failureMessages) {
+        order.initCancel(failureMessages);
+        log.info("Order payment is cancelling for order id: {}", order.getId().getValue());
+        return new OrderCancelledEvent(order, ZonedDateTime.now(ZoneId.of(UTC)));
+    }
+
+    @Override
+    public void cancelOrder(Order order, List<String> failureMessages) {
+
+    }
+
+    private void setOrderProductInformation(Order order, Restaurant restaurant) {
+        // 1) Build a map from product ID → full restaurant product
+        Map<ProductId, Product> productById = restaurant.getProducts().stream()
+                .collect(Collectors.toMap(
+                        Product::getId,               // key = product ID
+                        Function.identity()           // value = the Product itself
+                ));
+
+        // 2) For each order item, do a constant‑time lookup in the map
+        for (OrderItem orderItem : order.getItems()) {
+            Product current = orderItem.getProduct();
+            Product master = productById.get(current.getId());
+            if (master != null) {
+                // update name & price from the restaurant’s authoritative copy
+                current.updateWithConfirmedNameAndPrice(
+                        master.getName(),
+                        master.getPrice()
+                );
+            }
+        }
+    }
+
+    private void validateRestaurant(Restaurant restaurant) {
+        if (!restaurant.isActive()) {
+            throw new OrderDomainException("Restaurant with id " + restaurant.getId().getValue() +
+                    " is currently not active!");
+        }
+    }
+}
