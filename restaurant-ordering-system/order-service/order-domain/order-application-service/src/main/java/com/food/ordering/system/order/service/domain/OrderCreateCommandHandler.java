@@ -14,6 +14,7 @@ import com.food.ordering.system.order.service.domain.ports.output.repository.Res
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -39,6 +40,7 @@ public class OrderCreateCommandHandler {
         this.restaurantRepository = restaurantRepository;
     }
 
+    @Transactional
     public CreateOrderResponse createOrder(CreateOrderCommand createOrderCommand) {
         checkCustomer(createOrderCommand.getCustomerId());
         Restaurant restaurant = checkRestaurant(createOrderCommand);
