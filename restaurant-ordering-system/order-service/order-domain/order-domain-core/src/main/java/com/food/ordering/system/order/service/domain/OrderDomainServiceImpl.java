@@ -58,19 +58,18 @@ public class OrderDomainServiceImpl implements OrderDomainService{
     }
 
     private void setOrderProductInformation(Order order, Restaurant restaurant) {
-        // 1) Build a map from product ID → full restaurant product
-        Map<ProductId, Product> productById = restaurant.getProducts().stream()
-                .collect(Collectors.toMap(
-                        Product::getId,               // key = product ID
-                        Function.identity()           // value = the Product itself
-                ));
+        Map<ProductId,Product> productById =
+                restaurant.getProducts().stream()
+                        .collect(Collectors.toMap(
+                                Product::getId,
+                                Function.identity(),
+                                (first, second) -> first    // resolve dup: pick the first one
+                        ));
 
-        // 2) For each order item, do a constant‑time lookup in the map
-        for (OrderItem orderItem : order.getItems()) {
-            Product current = orderItem.getProduct();
-            Product master = productById.get(current.getId());
+        for (OrderItem item : order.getItems()) {
+            Product current = item.getProduct();
+            Product master  = productById.get(current.getId());
             if (master != null) {
-                // update name & price from the restaurant’s authoritative copy
                 current.updateWithConfirmedNameAndPrice(
                         master.getName(),
                         master.getPrice()
