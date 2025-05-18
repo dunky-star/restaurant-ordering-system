@@ -40,3 +40,7 @@ build/
 
 ### ENV Variable ###
 .env
+
+# ignore all docker‑compose volume data
+/infrastructure/docker-compose/volumes/
+
