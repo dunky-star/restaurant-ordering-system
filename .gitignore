@@ -42,5 +42,4 @@ build/
 .env
 
 # ignore all docker‑compose volume data
-/infrastructure/docker-compose/volumes/
-
+**/docker-compose/volumes/
